@@ -50,6 +50,7 @@ function Marketplace() {
 function App() {
   return (
     <Router>
+      {/* Global black background theme applied here */}
       <div className="bg-black text-white min-h-screen">
         <Navbar />
         <Routes>
