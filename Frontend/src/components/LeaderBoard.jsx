@@ -11,11 +11,11 @@ export default function Leaderboard() {
 
   return (
     <div className="text-white min-h-screen px-6 py-10">
-      <h1 className="text-4xl glitch text-center font-bold mb-8 text-pink-400">🏆 Leaderboard</h1>
+      <h1 className="text-4xl text-center font-bold mb-8 text-pink-400">🏆 Leaderboard</h1>
 
-      <div className="max-w-4xl mx-auto border border-pink-500 rounded-xl shadow-xl p-6">
+      <div className="max-w-4xl  mx-auto border border-pink-500 rounded-xl shadow-xl p-6">
         {topMemes.length === 0 ? (
-          <p className="text-center text-gray-400">No memes yet. Be the first to post!</p>
+          <p className="text-center glitch text-gray-400">No memes yet. Be the first to post!</p>
         ) : (
           <ul className="space-y-4">
             {topMemes.map((meme, index) => (
