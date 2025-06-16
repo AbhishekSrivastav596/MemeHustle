@@ -40,7 +40,14 @@ function Marketplace() {
 
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
         {memes.map(meme => (
-          <MemeCard key={meme.id} meme={meme} socket={socket} />
+          <MemeCard key={meme.id} meme={meme} socket={socket} onUpvote={(id) => {
+          setMemes((prev) =>
+            prev.map((m) =>
+              m.id === id ? { ...m, upvotes: m.upvotes + 1 } : m
+            )
+         );
+      }} />
+
         ))}
       </section>
     </main>
