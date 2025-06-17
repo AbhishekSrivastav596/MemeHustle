@@ -38,18 +38,25 @@ function Marketplace() {
 
       <CreateMeme onCreate={setMemes} />
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
-        {memes.map(meme => (
-          <MemeCard key={meme.id} meme={meme} socket={socket} onUpvote={(id) => {
-          setMemes((prev) =>
-            prev.map((m) =>
-              m.id === id ? { ...m, upvotes: m.upvotes + 1 } : m
-            )
-         );
-      }} />
+    <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8 px-6 mb-4 pb-4">
+  {memes.map((meme) => (
+    <MemeCard
+      key={meme.id}
+      meme={meme}
+      socket={socket}
+      onVote={(id, type) => {
+        setMemes((prev) =>
+          prev.map((m) =>
+            m.id === id
+              ? { ...m, upvotes: m.upvotes + (type === "up" ? 1 : -1) }
+              : m
+          )
+        );
+      }}
+    />
+  ))}
+</section>
 
-        ))}
-      </section>
     </main>
   );
 }
@@ -57,7 +64,6 @@ function Marketplace() {
 function App() {
   return (
     <Router>
-      {/* Global black background theme applied here */}
       <div className="bg-black text-white min-h-screen">
         <Navbar />
         <Routes>
