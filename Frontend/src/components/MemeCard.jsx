@@ -1,4 +1,12 @@
 import React, { useState } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+} from "@mui/material";
 
 const MemeCard = ({ meme, socket, onVote }) => {
   const [showBidModal, setShowBidModal] = useState(false);
@@ -54,88 +62,81 @@ const MemeCard = ({ meme, socket, onVote }) => {
   };
 
   return (
-    <div className="w-[500px] h-[340px] bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden flex flex-col relative">
-      <div className="overflow-hidden">
-        <img
-          src={meme.image_url || "https://picsum.photos/600"}
-          alt={meme.title}
-          className="object-cover w-full h-full"
-        />
-      </div>
-
-      <div className="flex flex-col justify-between flex-1 p-3 text-xs">
-        <div>
-          <h3 className="text-base font-semibold text-gray-800 truncate">{meme.title}</h3>
-          <p className="text-[11px] text-gray-500 truncate">Tags: {meme.tags.join(", ")}</p>
-          <p className="text-sm mt-1 text-gray-700">🔥 {meme.upvotes} upvotes</p>
-          {localBid && (
-            <p className="text-sm mt-1 text-green-600 font-medium">💰 {localBid} credits</p>
-          )}
-
-          <p className="text-[11px] mt-2 italic text-gray-600 h-[40px] overflow-y-auto">
-            {loadingCaption ? "🤖 Generating caption..." : caption}
-          </p>
+    <>
+      <div className="w-[500px] h-[340px] bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden flex flex-col relative">
+        <div className="overflow-hidden">
+          <img
+            src={meme.image_url || "https://picsum.photos/600"}
+            alt={meme.title}
+            className="object-cover w-full h-full"
+          />
         </div>
 
-        <div className="grid grid-cols-4 gap-1 mt-2">
-          <button
-            onClick={() => vote("up")}
-            className="bg-green-500 text-white text-xs py-1 rounded-full hover:bg-green-600"
-          >
-            ⬆
-          </button>
-          <button
-            onClick={() => vote("down")}
-            className="bg-red-500 text-white text-xs py-1 rounded-full hover:bg-red-600"
-          >
-            ⬇
-          </button>
-          <button
-            onClick={() => setShowBidModal(true)}
-            className="bg-yellow-400 text-black text-xs py-1 rounded-full hover:bg-yellow-300"
-          >
-            💸
-          </button>
-          <button
-            onClick={fetchCaption}
-            className="bg-blue-500 text-white text-xs py-1 rounded-full hover:bg-blue-600"
-          >
-            ⚡
-          </button>
-        </div>
-      </div>
-      {showBidModal && (
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg shadow-xl w-64">
-            <h3 className="text-sm font-bold text-gray-700 mb-2">Enter your bid:</h3>
-            <input
-              type="number"
-              value={bidAmount}
-              onChange={(e) => setBidAmount(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm mb-3 outline-none focus:ring-2 focus:ring-yellow-400"
-              placeholder="Amount in credits"
-            />
-            <div className="flex justify-between">
-              <button
-                onClick={placeBid}
-                className="bg-yellow-400 px-3 py-1 rounded text-black font-semibold hover:bg-yellow-300 text-sm"
-              >
-                Submit
-              </button>
-              <button
-                onClick={() => {
-                  setShowBidModal(false);
-                  setBidAmount("");
-                }}
-                className="text-gray-500 text-sm underline"
-              >
-                Cancel
-              </button>
-            </div>
+        <div className="flex flex-col justify-between flex-1 p-3 text-xs">
+          <div>
+            <h3 className="text-base font-semibold text-gray-800 truncate">{meme.title}</h3>
+            <p className="text-[11px] text-gray-500 truncate">Tags: {meme.tags.join(", ")}</p>
+            <p className="text-sm mt-1 text-gray-700">🔥 {meme.upvotes} upvotes</p>
+            {localBid && (
+              <p className="text-sm mt-1 text-green-600 font-medium">💰 {localBid} credits</p>
+            )}
+            <p className="text-[11px] mt-2 italic text-gray-600 h-[40px] overflow-y-auto">
+              {loadingCaption ? "🤖 Generating caption..." : caption}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-4 gap-1 mt-2">
+            <button
+              onClick={() => vote("up")}
+              className="bg-green-500 text-white text-xs py-1 rounded-full hover:bg-green-600"
+            >
+              ⬆
+            </button>
+            <button
+              onClick={() => vote("down")}
+              className="bg-red-500 text-white text-xs py-1 rounded-full hover:bg-red-600"
+            >
+              ⬇
+            </button>
+            <button
+              onClick={() => setShowBidModal(true)}
+              className="bg-yellow-400 text-black text-xs py-1 rounded-full hover:bg-yellow-300"
+            >
+              💸
+            </button>
+            <button
+              onClick={fetchCaption}
+              className="bg-blue-500 text-white text-xs py-1 rounded-full hover:bg-blue-600"
+            >
+              ⚡
+            </button>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+
+      <Dialog open={showBidModal} onClose={() => setShowBidModal(false)}>
+        <DialogTitle>Place Your Bid</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Credits"
+            type="number"
+            fullWidth
+            value={bidAmount}
+            onChange={(e) => setBidAmount(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowBidModal(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={placeBid} variant="contained" color="warning">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
