@@ -1,4 +1,6 @@
 const { supabase } = require("./supabase");
+require("dotenv").config();
+const { generateMemeCaption } = require("./ai");
 
 const leaderboardCache = { memes: [] };
 const aiCache = {};
@@ -17,9 +19,11 @@ function setupRoutes(app) {
 
 app.post("/vote", async (req, res) => {
   try {
-    const { meme_id } = req.body;
-    const { error } = await supabase.rpc("increment_upvotes", {
+    const { meme_id, type } = req.body;
+    const increment = type === "up" ? 1 : -1;
+    const { error } = await supabase.rpc("adjust_votes", {
       meme_id_input: meme_id,
+      delta: increment,
     });
     if (error) throw error;
     res.send({ success: true });
@@ -39,26 +43,50 @@ app.post("/vote", async (req, res) => {
     res.send(data);
   });
 
-  app.post("/generate-caption", async (req, res) => {
+app.post("/generate-caption", async (req, res) => {
+  try {
     const { tags } = req.body;
-    const prompt = `Funny caption for meme with tags: ${tags.join(", ")}`;
-    try {
-      const geminiRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-        }
-      );
-      const json = await geminiRes.json();
-      const caption = json.candidates?.[0]?.content?.parts?.[0]?.text || "HODL the vibes!";
-      aiCache[tags.join(",")] = caption;
-      res.send({ caption });
-    } catch (err) {
-      res.send({ caption: "YOLO to the moon!" });
+    if (!tags || !Array.isArray(tags)) {
+      return res.status(400).json({ error: "Invalid or missing tags array" });
     }
-  });
+
+    const caption = await generateMemeCaption(tags);
+    console.log("Generated Caption:", caption);
+
+    res.json({ caption });
+  } catch (err) {
+    console.error("Caption API error:", err.message);
+    res.status(500).json({ error: "Failed to generate caption" });
+  }
+});
+
+  app.post("/memes/:id/bid", async (req, res) => {
+  const { id } = req.params;
+  const { credits, user_id = "cyberpunk420" } = req.body;
+
+  try {
+    const { data, error } = await supabase.from("bids").insert([
+      {
+        meme_id: id,
+        user_id,
+        credits: parseInt(credits)
+      }
+    ]);
+
+    if (error) {
+      console.error("Bid error:", error.message);
+      return res.status(500).send({ success: false, error: error.message });
+    }
+    req.io?.emit?.("new-bid", { meme_id: id, credits, user_id });
+
+    res.send({ success: true, data });
+  } catch (err) {
+    console.error("Bid exception:", err.message);
+    res.status(500).send({ success: false, error: err.message });
+  }
+});
 }
+
+
 
 module.exports = { setupRoutes };
