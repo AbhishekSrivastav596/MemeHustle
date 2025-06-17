@@ -4,7 +4,7 @@ export default function Leaderboard() {
   const [topMemes, setTopMemes] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/leaderboard")
+    fetch("https://memehustle-9e0c.onrender.com/leaderboard")
       .then(res => res.json())
       .then(setTopMemes);
   }, []);

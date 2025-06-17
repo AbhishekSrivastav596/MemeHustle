@@ -16,7 +16,7 @@ const MemeCard = ({ meme, socket, onVote }) => {
   const [loadingCaption, setLoadingCaption] = useState(false);
 
   const vote = async (type) => {
-    await fetch("http://localhost:5000/vote", {
+    await fetch("https://memehustle-9e0c.onrender.com/vote", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ meme_id: meme.id, type }),
@@ -28,7 +28,7 @@ const MemeCard = ({ meme, socket, onVote }) => {
   const placeBid = async () => {
     if (!bidAmount || isNaN(bidAmount)) return alert("Enter a valid number");
 
-    await fetch(`http://localhost:5000/memes/${meme.id}/bid`, {
+    await fetch(`https://memehustle-9e0c.onrender.com/memes/${meme.id}/bid`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ credits: bidAmount, user_id: "cyberpunk420" }),
@@ -48,7 +48,7 @@ const MemeCard = ({ meme, socket, onVote }) => {
   const fetchCaption = async () => {
     setLoadingCaption(true);
     try {
-      const res = await fetch("http://localhost:5000/generate-caption", {
+      const res = await fetch("https://memehustle-9e0c.onrender.com/generate-caption", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tags: meme.tags }),

@@ -8,13 +8,13 @@ import Navbar from "./components/Navbar";
 import LandingPage from "./components/LandingPage";
 import Leaderboard from "./components/LeaderBoard";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://memehustle-9e0c.onrender.com");
 
 function Marketplace() {
   const [memes, setMemes] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/memes").then(res => res.json()).then(setMemes);
+    fetch("https://memehustle-9e0c.onrender.com/memes").then(res => res.json()).then(setMemes);
 
     socket.on("new-bid", bid => {
       setMemes(prev =>
@@ -23,7 +23,7 @@ function Marketplace() {
     });
 
     socket.on("vote-update", () => {
-      fetch("http://localhost:5000/memes").then(res => res.json()).then(setMemes);
+      fetch("https://memehustle-9e0c.onrender.com/memes").then(res => res.json()).then(setMemes);
     });
 
     return () => socket.disconnect();

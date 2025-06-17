@@ -6,12 +6,12 @@ export default function CreateMeme({ onCreate }) {
   const [tags, setTags] = useState("");
 
   const handleCreate = async () => {
-    await fetch("http://localhost:5000/memes", {
+    await fetch("https://memehustle-9e0c.onrender.com/memes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, image_url: url, tags: tags.split(","), owner_id: "neo123" }),
     });
-    const newMemes = await fetch("http://localhost:5000/memes").then(r => r.json());
+    const newMemes = await fetch("https://memehustle-9e0c.onrender.com/memes").then(r => r.json());
     onCreate(newMemes);
     setTitle(""); setUrl(""); setTags("");
   };
