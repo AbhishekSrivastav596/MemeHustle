@@ -12,10 +12,33 @@ function setupRoutes(app) {
     res.send({ data, error });
   });
 
-  app.get("/memes", async (req, res) => {
-    const { data } = await supabase.from("memes").select("*");
-    res.send(data);
-  });
+app.get("/memes", async (req, res) => {
+  try {
+    const { data: memes, error: memeError } = await supabase.from("memes").select("*");
+    if (memeError) throw memeError;
+
+    const { data: bids, error: bidError } = await supabase
+      .from("bids")
+      .select("meme_id, credits")
+      .order("credits", { ascending: false });
+
+    if (bidError) throw bidError;
+    const memeMap = {};
+    for (const bid of bids) {
+      if (!memeMap[bid.meme_id]) memeMap[bid.meme_id] = bid.credits;
+    }
+    const enriched = memes.map(meme => ({
+      ...meme,
+      currentBid: memeMap[meme.id] || null,
+    }));
+
+    res.send(enriched);
+  } catch (err) {
+    console.error("Fetch memes error:", err.message);
+    res.status(500).send({ error: err.message });
+  }
+});
+
 
 app.post("/vote", async (req, res) => {
   try {
